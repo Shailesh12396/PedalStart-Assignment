@@ -2,20 +2,22 @@ const express = require('express');
 const router = express.Router();
 const Task = require('../models/task');
 
+
 router.post('/', async (req, res) => {
   const { title, description, date } = req.body;
 
   if (!title || !description || !date) {
     return res.status(400).json({ message: 'Please provide title, description, and date' });
   }
-  try {
-    const newTask = new Task({ title, description, date: new Date(date) });
+  try {    
+    const newTask = new Task({ title, description, date });
     await newTask.save();
     res.status(201).json({ message: 'Successfully Created' });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }
 });
+
 
 router.get('/', async (req, res) => {
   try {
@@ -25,6 +27,7 @@ router.get('/', async (req, res) => {
     res.status(500).json({ message: 'Server error', error });
   }
 });
+
 
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
@@ -39,6 +42,7 @@ router.delete('/:id', async (req, res) => {
     res.status(500).json({ message: 'Server error', error });
   }
 });
+
 
 router.put('/:id', async (req, res) => {
   const { id } = req.params;

@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
+import axios from 'axios';
 
 function Home() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [date, setDate] = useState('');
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [loading, setLoading]=useState(false);
 
     const handleTask = () => {
         setIsModalOpen(true);
@@ -16,6 +18,23 @@ function Home() {
     const handleSubmitDoubt = async () => {
         console.log(date, title, description);
     }
+
+    useEffect(() => {
+        const fetchTask = async () => {
+            setLoading(true);
+            try {
+                const response = await axios.get('http://localhost:5000/api/tasks');
+                console.log('fetch', response.data);
+            } catch (error) {
+                console.error("Error fetching notice:", error);
+            }
+            finally {
+                setLoading(false)
+            }
+        };
+        fetchTask();
+    });
+
     return (
         <div>
             <div className='flex justify-between w-full'>
