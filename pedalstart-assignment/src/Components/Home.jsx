@@ -1,12 +1,15 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import TaskTile from './TaskTile';
+import Loading from '../Loading/Loading';
 
 function Home() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [date, setDate] = useState('');
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
-    const [loading, setLoading]=useState(false);
+    const [loading, setLoading] = useState(false);
+    const [details, setDetails] = useState([]);
 
     const handleTask = () => {
         setIsModalOpen(true);
@@ -17,6 +20,23 @@ function Home() {
 
     const handleSubmitDoubt = async () => {
         console.log(date, title, description);
+        try {
+            const response = await axios.post('http://localhost:5000/api/tasks', {
+                title: title,
+                date: date,
+                description: description
+            });
+            if (response.status === 200) {
+                console.log('successfully created');
+                setIsModalOpen(false);
+
+            }
+        } catch (error) {
+            console.error("Error crating task:", error);
+        }
+        finally {
+            setLoading(false)
+        }
     }
 
     useEffect(() => {
@@ -24,25 +44,36 @@ function Home() {
             setLoading(true);
             try {
                 const response = await axios.get('http://localhost:5000/api/tasks');
-                console.log('fetch', response.data);
+                if (response.status === 200) {
+                    setDetails(response.data);
+                    console.log('fetch', response.data);
+                }
             } catch (error) {
-                console.error("Error fetching notice:", error);
+                console.error("Error fetching task:", error);
             }
             finally {
                 setLoading(false)
             }
         };
         fetchTask();
-    });
+    }, []);
 
+
+    
     return (
         <div>
-            <div className='flex justify-between w-full'>
+            <div className='flex justify-between w-full items-center'>
                 <div className='text-lg font-medium'>Shailesh's Task Scheduler </div>
                 <div className="mt-3 ">
-                    <button className='bg-purple-400 rounded-lg shadow-md px-3 py-1 text-white' onClick={handleTask}>Create Task +</button>
+                    <button className='bg-purple-400 whitespace-nowrap rounded-lg shadow-md px-3 py-1 text-white' onClick={handleTask}>Create Task +</button>
                 </div>
             </div>
+            {loading ? (
+                <Loading />
+            ) : (
+                <TaskTile details={details} />
+
+            )}
             {isModalOpen && (
                 <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex justify-center items-center">
                     <div className="bg-white rounded-lg p-6 shadow-lg w-1/2">
