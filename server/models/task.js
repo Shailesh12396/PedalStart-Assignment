@@ -13,7 +13,6 @@ const taskSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-},{timestamps:false, versionKey:false});
-
+}, { timestamps: false, versionKey: false });
 
 module.exports = mongoose.model('Task', taskSchema);
